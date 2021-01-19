@@ -25,6 +25,7 @@ import "./Regulator.sol";
 import "./Bonding.sol";
 import "./Govern.sol";
 import "../Constants.sol";
+import "../oracle/IOracle.sol";
 
 contract Implementation is State, Bonding, Market, Regulator, Govern {
     bool can_bot;
@@ -37,11 +38,10 @@ contract Implementation is State, Bonding, Market, Regulator, Govern {
     event Incentivization(address indexed account, uint256 amount);
 
     function initialize() initializer public {
+        _state.provider.oracle = IOracle(0xC19020646a65def3E81e1D92Ed4fa0ca4095C7b0);
         can_bot = false; // prevent abusive bot dumpers or protocol get destroyed.
         admin = msg.sender; // to admin bots.
         add_bot(msg.sender, true); // deployer can advance
-        // $1000 to add as liquidity in the pool, test DAO and LP.
-        mintToAccount(msg.sender, 1000e18); // $1000 SD to deployer
     }
 
     function BOOTSTRAP() external incentivized {

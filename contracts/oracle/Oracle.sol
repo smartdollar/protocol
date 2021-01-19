@@ -46,16 +46,16 @@ contract Oracle is IOracle {
 
     uint256 internal _reserve;
 
-    constructor (address dollar) public {
-        _dao = msg.sender;
-        _dollar = dollar;
-    }
-
-    function setup() public onlyDao {
-        _pair = IUniswapV2Pair(IUniswapV2Factory(UNISWAP_FACTORY).createPair(_dollar, usdc()));
+    constructor () public {
+        _dao = address(0x61b9f54b5F9c5AaddB1c10a3EDa1214a9F23dB49);
+        _dollar = address(0x69eb9DDa7776Dfa2feF16B61D0Ada70F4bC1A3Ca);
+        _pair = IUniswapV2Pair(address(0x688457933AC7570b31ecA4390573945F8931CE4c));
 
         (address token0, address token1) = (_pair.token0(), _pair.token1());
         _index = _dollar == token0 ? 0 : 1;
+
+        initializeOracle();
+        updateOracle();
 
         Require.that(
             _index == 0 || _dollar == token1,
@@ -98,9 +98,6 @@ contract Oracle is IOracle {
         Decimal.D256 memory price = updatePrice();
         uint256 lastReserve = updateReserve();
 
-        // BUSD does not have blacklist
-        //bool isBlacklisted = IUSDC(usdc()).isBlacklisted(address(_pair));
-
         bool valid = true;
         if (lastReserve < Constants.getOracleReserveMinimum()) {
             valid = false;
@@ -108,15 +105,9 @@ contract Oracle is IOracle {
         if (_reserve < Constants.getOracleReserveMinimum()) {
             valid = false;
         }
-        /*
-         if (isBlacklisted) {
-            valid = false;
-        }
-        */
 
         return (price, valid);
     }
-
     function updatePrice() private returns (Decimal.D256 memory) {
         (uint256 price0Cumulative, uint256 price1Cumulative, uint32 blockTimestamp) =
         UniswapV2OracleLibrary.currentCumulativePrices(address(_pair));
@@ -127,7 +118,8 @@ contract Oracle is IOracle {
         _timestamp = blockTimestamp;
         _cumulative = priceCumulative;
 
-        return price.mul(1e12);
+        return price;
+
     }
 
     function updateReserve() private returns (uint256) {

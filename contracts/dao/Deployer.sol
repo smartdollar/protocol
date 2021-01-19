@@ -42,8 +42,8 @@ contract Deployer1 is State, Permission, Upgradeable {
 
 contract Deployer2 is State, Permission, Upgradeable {
     function initialize() initializer public {
-        _state.provider.oracle = new Oracle(address(dollar()));
-        oracle().setup();
+        //_state.provider.oracle = new Oracle(address(dollar()));
+        //oracle().setup();
     }
 
     function implement(address implementation) external {
@@ -67,5 +67,18 @@ contract Deployer3 is State, Permission, Upgradeable {
     }
     function pair() public view returns (address) {
         return oracle().pair();
+    }
+}
+
+contract Deployer4 is State, Permission, Upgradeable {
+    function initialize() initializer public {
+        _state.provider.oracle = new Oracle();
+    }
+
+    function implement(address implementation) external {
+        upgradeTo(implementation);
+    }
+    function oracle() public view returns (IOracle) {
+        return _state.provider.oracle;
     }
 }

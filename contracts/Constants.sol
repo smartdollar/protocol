@@ -27,7 +27,7 @@ library Constants {
 
     /* Bootstrapping */
     uint256 private constant BOOTSTRAPPING_PERIOD = 300; // 2 weeks
-    uint256 private constant BOOTSTRAPPING_PRICE = 154e16; // 1.54 BUSD (targeting 4.5% inflation)
+    uint256 private constant BOOTSTRAPPING_PRICE = 11e17; // 1.1 BUSD (targeting 0.75% inflation)
 
     /* Oracle */
     // BinanceUSD
@@ -52,10 +52,10 @@ library Constants {
     uint256 private constant EPOCH_PERIOD = 3600; // 1 hour
 
     /* Governance */
-    uint256 private constant GOVERNANCE_PERIOD = 36;
-    uint256 private constant GOVERNANCE_QUORUM = 33e16; // 33%
-    uint256 private constant GOVERNANCE_SUPER_MAJORITY = 66e16; // 66%
-    uint256 private constant GOVERNANCE_EMERGENCY_DELAY = 6; // 6 epochs
+    uint256 private constant GOVERNANCE_PERIOD = 4; // hours
+    uint256 private constant GOVERNANCE_QUORUM = 25e16; // 25%
+    uint256 private constant GOVERNANCE_SUPER_MAJORITY = 51e16; // 51%
+    uint256 private constant GOVERNANCE_EMERGENCY_DELAY = 2; // 1 epoch
 
     /* DAO */
     uint256 private constant ADVANCE_INCENTIVE = 50e18; // 50 SD
@@ -67,12 +67,12 @@ library Constants {
     /* Market */
     uint256 private constant COUPON_EXPIRATION = 1440; // 60 days
     uint256 private constant DEBT_RATIO_CAP = 35e16; // 35%
-    uint256 private constant INITIAL_COUPON_REDEMPTION_PENALTY = 50e16; // 50%
-    uint256 private constant COUPON_REDEMPTION_PENALTY_DECAY = 3600; // 1 hour
+    uint256 private constant INITIAL_COUPON_REDEMPTION_PENALTY = 25e16; // 25%
+    uint256 private constant COUPON_REDEMPTION_PENALTY_DECAY = 1200; // 20 minutes
 
     /* Regulator */
     uint256 private constant SUPPLY_CHANGE_DIVISOR = 12e18; // 12
-    uint256 private constant SUPPLY_CHANGE_LIMIT = 10e16; // 10%
+    uint256 private constant SUPPLY_CHANGE_LIMIT = 1e16; // 1%
     uint256 private constant ORACLE_POOL_RATIO = 40; // 40%
 
     /**
