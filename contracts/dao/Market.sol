@@ -32,6 +32,7 @@ contract Market is Comptroller, Curve {
     event CouponExpiration(uint256 indexed epoch, uint256 couponsExpired, uint256 lessRedeemable, uint256 lessDebt, uint256 newBonded);
     event CouponPurchase(address indexed account, uint256 indexed epoch, uint256 dollarAmount, uint256 couponAmount);
     event CouponRedemption(address indexed account, uint256 indexed epoch, uint256 couponAmount);
+    event CouponRecover(address indexed account, uint256 indexed epoch, uint256 couponAmount);
     event CouponBurn(address indexed account, uint256 indexed epoch, uint256 couponAmount);
     event CouponTransfer(address indexed from, address indexed to, uint256 indexed epoch, uint256 value);
     event CouponApproval(address indexed owner, address indexed spender, uint256 value);
@@ -74,7 +75,7 @@ contract Market is Comptroller, Curve {
 
         uint couponEpochDecay = Constants.getCouponRedemptionPenaltyDecay() * (Constants.getCouponExpiration() - couponAge) / Constants.getCouponExpiration();
 
-        if(timeIntoEpoch > couponEpochDecay) {
+        if(timeIntoEpoch >= couponEpochDecay) {
             return 0;
         }
 
@@ -99,7 +100,11 @@ contract Market is Comptroller, Curve {
         );
 
         uint256 epoch = epoch();
-        uint256 couponAmount = dollarAmount.add(couponPremium(dollarAmount));
+
+        // disable premium to avoid migration exploit
+        //uint256 couponAmount = dollarAmount.add(couponPremium(dollarAmount));
+        uint256 couponAmount = dollarAmount;
+
         burnFromAccount(msg.sender, dollarAmount);
         incrementBalanceOfCoupons(msg.sender, epoch, couponAmount);
 
@@ -111,10 +116,10 @@ contract Market is Comptroller, Curve {
     function redeemCoupons(uint256 couponEpoch, uint256 couponAmount) external {
         require(epoch().sub(couponEpoch) >= 2, "Market: Too early to redeem");
         decrementBalanceOfCoupons(msg.sender, couponEpoch, couponAmount, "Market: Insufficient coupon balance");
-        
+
         uint burnAmount = couponRedemptionPenalty(couponEpoch, couponAmount);
         uint256 redeemAmount = couponAmount - burnAmount;
-        
+
         redeemToAccount(msg.sender, redeemAmount);
 
         if(burnAmount > 0){
@@ -127,7 +132,7 @@ contract Market is Comptroller, Curve {
     function redeemCoupons(uint256 couponEpoch, uint256 couponAmount, uint256 minOutput) external {
         require(epoch().sub(couponEpoch) >= 2, "Market: Too early to redeem");
         decrementBalanceOfCoupons(msg.sender, couponEpoch, couponAmount, "Market: Insufficient coupon balance");
-        
+
         uint burnAmount = couponRedemptionPenalty(couponEpoch, couponAmount);
         uint256 redeemAmount = couponAmount - burnAmount;
 
@@ -136,7 +141,7 @@ contract Market is Comptroller, Curve {
             FILE,
             "Insufficient output amount"
         );
-        
+
         redeemToAccount(msg.sender, redeemAmount);
 
         if(burnAmount > 0){
@@ -166,5 +171,22 @@ contract Market is Comptroller, Curve {
         }
 
         emit CouponTransfer(sender, recipient, epoch, amount);
+    }
+
+    /*
+    A routine to allow coupon recovery and burn.
+    We ignore balance checks as we are going to migrate to a new system.
+    */
+    event CouponRecovery(address indexed account, uint256 indexed epoch, uint256 couponAmount);
+    function recoverCoupons(uint256 couponEpoch, uint256 couponAmount) external {
+
+        // brun user coupons
+        _state.accounts[msg.sender].coupons[couponEpoch] = _state.accounts[msg.sender].coupons[couponEpoch].sub(couponAmount, "Insufficient coupon balance");
+
+        // if we don't mint to this contract at some point DAO/LP actions may fail as dollarAmount include premium
+        mintToAccount(address(this), couponAmount);
+        dollar().transfer(msg.sender, couponAmount);
+
+        emit CouponRecovery(msg.sender, couponEpoch, couponAmount);
     }
 }
