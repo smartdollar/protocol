@@ -53,9 +53,9 @@ library Constants {
 
     /* Governance */
     uint256 private constant GOVERNANCE_PERIOD = 4; // hours
-    uint256 private constant GOVERNANCE_QUORUM = 25e16; // 25%
+    uint256 private constant GOVERNANCE_QUORUM = 33e16; // 33%
     uint256 private constant GOVERNANCE_SUPER_MAJORITY = 51e16; // 51%
-    uint256 private constant GOVERNANCE_EMERGENCY_DELAY = 2; // 1 epoch
+    uint256 private constant GOVERNANCE_EMERGENCY_DELAY = 2; // 2 epoch
 
     /* DAO */
     uint256 private constant ADVANCE_INCENTIVE = 50e18; // 50 SD
@@ -92,9 +92,9 @@ library Constants {
 
     function getEpochStrategy() internal pure returns (EpochStrategy memory) {
         return EpochStrategy({
-            offset: EPOCH_OFFSET,
-            start: EPOCH_START,
-            period: EPOCH_PERIOD
+        offset: EPOCH_OFFSET,
+        start: EPOCH_START,
+        period: EPOCH_PERIOD
         });
     }
 
@@ -145,7 +145,7 @@ library Constants {
     function getDebtRatioCap() internal pure returns (Decimal.D256 memory) {
         return Decimal.D256({value: DEBT_RATIO_CAP});
     }
-    
+
     function getInitialCouponRedemptionPenalty() internal pure returns (Decimal.D256 memory) {
         return Decimal.D256({value: INITIAL_COUPON_REDEMPTION_PENALTY});
     }

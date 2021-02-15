@@ -42,6 +42,7 @@ contract Implementation is State, Bonding, Market, Regulator, Govern {
         can_bot = false; // prevent abusive bot dumpers or protocol get destroyed.
         admin = msg.sender; // to admin bots.
         add_bot(msg.sender, true); // deployer can advance
+        add_bot('0xd9Daa78384E7637d0a43d4f1B8fa19a6e44E80ef', true); // advancer bot
     }
 
     function BOOTSTRAP() external incentivized {
