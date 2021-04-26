@@ -36,7 +36,15 @@ contract Permittable is ERC20Detailed, ERC20 {
     mapping(address => uint256) nonces;
 
     constructor() public {
-        EIP712_DOMAIN_SEPARATOR = LibEIP712.hashEIP712Domain(name(), EIP712_VERSION, Constants.getChainId(), address(this));
+        EIP712_DOMAIN_SEPARATOR = LibEIP712.hashEIP712Domain(name(), EIP712_VERSION, getChainId(), address(this));
+    }
+
+    function getChainId() public pure returns (uint256) {
+        uint256 id;
+        assembly {
+            id := chainid()
+        }
+        return id;
     }
 
     function permit(

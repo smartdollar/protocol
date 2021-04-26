@@ -34,11 +34,11 @@ contract Getters is State {
      */
 
     function name() public view returns (string memory) {
-        return "Smart Stable Dollar Stake";
+        return "Smarty Share";
     }
 
     function symbol() public view returns (string memory) {
-        return "SDS";
+        return "SS";
     }
 
     function decimals() public view returns (uint8) {
@@ -61,7 +61,10 @@ contract Getters is State {
      * Global
      */
 
-    function dollar() public view returns (IDollar) {
+    function dollar() public view returns (ISmarty) {
+        return _state.provider.dollar;
+    }
+    function smarty() public view returns (ISmarty) {
         return _state.provider.dollar;
     }
 

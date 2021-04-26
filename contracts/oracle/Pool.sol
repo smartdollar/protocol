@@ -28,10 +28,14 @@ import "./Liquidity.sol";
 
 contract Pool is PoolSetters, Liquidity {
     using SafeMath for uint256;
-
-    constructor(address dollar, address univ2) public {
+    constructor() public{
+        _state.dev = msg.sender;
+    }
+    function init(address dollar, address univ2, address _CURRENCY, address _FACTORY) public onlyAdmin {
+        _state.provider.CURRENCY = IERC20(_CURRENCY);
+        _state.provider.FACTORY = _FACTORY;
         _state.provider.dao = IDAO(msg.sender);
-        _state.provider.dollar = IDollar(dollar);
+        _state.provider.dollar = ISmarty(dollar);
         _state.provider.univ2 = IERC20(univ2);
     }
 

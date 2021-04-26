@@ -1,7 +1,5 @@
 /*
     Copyright 2020 Dynamic Dollar Devs, based on the works of the Empty Set Squad
-    Copyright 2021 SD Squad Devs, based on the works of the Empty Set Squad
-    t.me/ssdprotocol | twitter.com/ssdprotocol
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -19,10 +17,17 @@
 pragma solidity ^0.5.17;
 pragma experimental ABIEncoderV2;
 
-import "../external/Decimal.sol";
+import "../dao/Upgradeable.sol";
+import "../dao/Permission.sol";
 
-contract IOracle {
-    function setup() public;
-    function capture() public returns (Decimal.D256 memory, bool);
-    function pair() external view returns (address);
+contract MockUpgradeable is Upgradeable, Permission {
+    constructor () public { }
+
+    function initialize() public {
+        revert("Should not call");
+    }
+
+    function upgradeToE(address newImplementation) external {
+        super.upgradeTo(newImplementation);
+    }
 }

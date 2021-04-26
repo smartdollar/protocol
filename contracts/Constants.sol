@@ -22,20 +22,14 @@ pragma experimental ABIEncoderV2;
 import "./external/Decimal.sol";
 
 library Constants {
-    /* Chain */
-    uint256 private constant CHAIN_ID = 56; // bsc
 
     /* Bootstrapping */
     uint256 private constant BOOTSTRAPPING_PERIOD = 300; // 2 weeks
     uint256 private constant BOOTSTRAPPING_PRICE = 11e17; // 1.1 BUSD (targeting 0.75% inflation)
 
-    /* Oracle */
-    // BinanceUSD
-    address private constant USDC = address(0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56);
-    uint256 private constant ORACLE_RESERVE_MINIMUM = 1e10; // 10,000 USDC
-
     /* Bonding */
     uint256 private constant INITIAL_STAKE_MULTIPLE = 1e6; // 100 SD -> 100M SDS
+    uint256 private constant ORACLE_RESERVE_MINIMUM = 1e10; // 10,000 USDC
 
     // bootstrap mint program
     address private constant TREASURE = address(0x3e1850AcA3680F207C477143dc6ac80A3390817E); // INDEX=0
@@ -80,10 +74,6 @@ library Constants {
      */
     function getTreasureAddress() internal pure returns (address) {
         return TREASURE;
-    }
-
-    function getUsdcAddress() internal pure returns (address) {
-        return USDC;
     }
 
     function getOracleReserveMinimum() internal pure returns (uint256) {
@@ -166,7 +156,4 @@ library Constants {
         return ORACLE_POOL_RATIO;
     }
 
-    function getChainId() internal pure returns (uint256) {
-        return CHAIN_ID;
-    }
 }

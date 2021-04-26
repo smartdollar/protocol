@@ -65,7 +65,7 @@ contract Regulator is Comptroller {
         emit SupplyIncrease(epoch(), price.value, newRedeemable, lessDebt, newBonded);
     }
 
-    function limit(Decimal.D256 memory delta) private view returns (Decimal.D256 memory) {
+    function limit(Decimal.D256 memory delta) private pure returns (Decimal.D256 memory) {
         Decimal.D256 memory supplyChangeLimit = Constants.getSupplyChangeLimit();
 
         return delta.greaterThan(supplyChangeLimit) ? supplyChangeLimit : delta;

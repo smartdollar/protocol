@@ -1,7 +1,5 @@
 /*
     Copyright 2020 Dynamic Dollar Devs, based on the works of the Empty Set Squad
-    Copyright 2021 SD Squad Devs, based on the works of the Empty Set Squad
-    t.me/ssdprotocol | twitter.com/ssdprotocol
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -17,7 +15,19 @@
 */
 
 pragma solidity ^0.5.17;
+pragma experimental ABIEncoderV2;
 
-contract IUSDC {
-    function isBlacklisted(address _account) external view returns (bool);
+import "@openzeppelin/contracts/token/ERC20/ERC20Burnable.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20Detailed.sol";
+
+contract TestnetBUSD is ERC20Detailed, ERC20Burnable {
+    constructor()
+    ERC20Detailed("Binance USD", "BUSD", 18)
+    public
+    { }
+
+    function mint(address account, uint256 amount) external returns (bool) {
+        _mint(account, amount);
+        return true;
+    }
 }

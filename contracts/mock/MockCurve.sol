@@ -1,7 +1,5 @@
 /*
     Copyright 2020 Dynamic Dollar Devs, based on the works of the Empty Set Squad
-    Copyright 2021 SD Squad Devs, based on the works of the Empty Set Squad
-    t.me/ssdprotocol | twitter.com/ssdprotocol
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -19,10 +17,16 @@
 pragma solidity ^0.5.17;
 pragma experimental ABIEncoderV2;
 
-import "../external/Decimal.sol";
+import "../dao/Curve.sol";
 
-contract IOracle {
-    function setup() public;
-    function capture() public returns (Decimal.D256 memory, bool);
-    function pair() external view returns (address);
+contract MockCurve is Curve {
+    constructor () public { }
+
+    function calculateCouponsE(
+        uint256 totalSupply,
+        uint256 totalDebt,
+        uint256 amount
+    ) external pure returns (uint256) {
+        return super.calculateCouponPremium(totalSupply, totalDebt, amount);
+    }
 }

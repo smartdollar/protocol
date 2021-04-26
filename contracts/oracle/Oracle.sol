@@ -26,14 +26,12 @@ import '../external/UniswapV2Library.sol';
 import "../external/Require.sol";
 import "../external/Decimal.sol";
 import "./IOracle.sol";
-import "./IUSDC.sol";
 import "../Constants.sol";
 
 contract Oracle is IOracle {
     using Decimal for Decimal.D256;
 
     bytes32 private constant FILE = "Oracle";
-    address private constant UNISWAP_FACTORY = address(0xBCfCcbde45cE874adCB698cC183deBcF17952812);
 
     address internal _dao;
     address internal _dollar;
@@ -46,21 +44,26 @@ contract Oracle is IOracle {
 
     uint256 internal _reserve;
 
-    constructor () public {
-        _dao = address(0x61b9f54b5F9c5AaddB1c10a3EDa1214a9F23dB49);
-        _dollar = address(0x69eb9DDa7776Dfa2feF16B61D0Ada70F4bC1A3Ca);
-        _pair = IUniswapV2Pair(address(0x688457933AC7570b31ecA4390573945F8931CE4c));
+    address internal BUSD;
+    IUniswapV2Factory internal UNISWAP;
+
+    constructor (address dollar, address _BUSD, address _UNISWAP) public {
+        BUSD = _BUSD;
+        UNISWAP = IUniswapV2Factory(_UNISWAP);
+        _dao = msg.sender;
+        _dollar = dollar;
+    }
+
+    function setup() public onlyDao {
+        _pair = IUniswapV2Pair(UNISWAP.createPair(_dollar, BUSD));
 
         (address token0, address token1) = (_pair.token0(), _pair.token1());
         _index = _dollar == token0 ? 0 : 1;
 
-        initializeOracle();
-        updateOracle();
-
         Require.that(
             _index == 0 || _dollar == token1,
             FILE,
-            "Smart not found"
+            "Smarty not found"
         );
     }
 
@@ -83,14 +86,15 @@ contract Oracle is IOracle {
     function initializeOracle() private {
         IUniswapV2Pair pair = _pair;
         uint256 priceCumulative = _index == 0 ?
-            pair.price0CumulativeLast() :
-            pair.price1CumulativeLast();
+        pair.price0CumulativeLast() :
+        pair.price1CumulativeLast();
         (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast) = pair.getReserves();
-        if(reserve0 != 0 && reserve1 != 0 && blockTimestampLast != 0) {
+        if (reserve0 != 0 && reserve1 != 0 && blockTimestampLast != 0) {
             _cumulative = priceCumulative;
             _timestamp = blockTimestampLast;
             _initialized = true;
-            _reserve = _index == 0 ? reserve1 : reserve0; // get counter's reserve
+            _reserve = _index == 0 ? reserve1 : reserve0;
+            // get counter's reserve
         }
     }
 
@@ -108,12 +112,14 @@ contract Oracle is IOracle {
 
         return (price, valid);
     }
+
     function updatePrice() private returns (Decimal.D256 memory) {
         (uint256 price0Cumulative, uint256 price1Cumulative, uint32 blockTimestamp) =
         UniswapV2OracleLibrary.currentCumulativePrices(address(_pair));
-        uint32 timeElapsed = blockTimestamp - _timestamp; // overflow is desired
+        uint32 timeElapsed = blockTimestamp - _timestamp;
+        // overflow is desired
         uint256 priceCumulative = _index == 0 ? price0Cumulative : price1Cumulative;
-        Decimal.D256 memory price = Decimal.ratio((priceCumulative - _cumulative) / timeElapsed, 2**112);
+        Decimal.D256 memory price = Decimal.ratio((priceCumulative - _cumulative) / timeElapsed, 2 ** 112);
 
         _timestamp = blockTimestamp;
         _cumulative = priceCumulative;
@@ -125,13 +131,10 @@ contract Oracle is IOracle {
     function updateReserve() private returns (uint256) {
         uint256 lastReserve = _reserve;
         (uint112 reserve0, uint112 reserve1,) = _pair.getReserves();
-        _reserve = _index == 0 ? reserve1 : reserve0; // get counter's reserve
+        _reserve = _index == 0 ? reserve1 : reserve0;
+        // get counter's reserve
 
         return lastReserve;
-    }
-
-    function usdc() internal view returns (address) {
-        return Constants.getUsdcAddress();
     }
 
     function pair() external view returns (address) {

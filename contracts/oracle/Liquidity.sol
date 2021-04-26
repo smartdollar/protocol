@@ -26,11 +26,9 @@ import "../Constants.sol";
 import "./PoolGetters.sol";
 
 contract Liquidity is PoolGetters {
-    address private constant UNISWAP_FACTORY = address(0xBCfCcbde45cE874adCB698cC183deBcF17952812); // PancakeFactory
-
     function addLiquidity(uint256 dollarAmount) internal returns (uint256, uint256) {
-        (address dollar, address usdc) = (address(dollar()), usdc());
-        (uint reserveA, uint reserveB) = getReserves(dollar, usdc);
+        (address dollar, address _usdc) = (address(dollar()), usdc());
+        (uint reserveA, uint reserveB) = getReserves(dollar, _usdc);
 
         uint256 usdcAmount = (reserveA == 0 && reserveB == 0) ?
              dollarAmount :
@@ -38,14 +36,14 @@ contract Liquidity is PoolGetters {
 
         address pair = address(univ2());
         IERC20(dollar).transfer(pair, dollarAmount);
-        IERC20(usdc).transferFrom(msg.sender, pair, usdcAmount);
+        IERC20(_usdc).transferFrom(msg.sender, pair, usdcAmount);
         return (usdcAmount, IUniswapV2Pair(pair).mint(address(this)));
     }
 
     // overridable for testing
     function getReserves(address tokenA, address tokenB) internal view returns (uint reserveA, uint reserveB) {
         (address token0,) = UniswapV2Library.sortTokens(tokenA, tokenB);
-        (uint reserve0, uint reserve1,) = IUniswapV2Pair(UniswapV2Library.pairFor(UNISWAP_FACTORY, tokenA, tokenB)).getReserves();
+        (uint reserve0, uint reserve1,) = IUniswapV2Pair(UniswapV2Library.pairFor(_state.provider.FACTORY, tokenA, tokenB)).getReserves();
         (reserveA, reserveB) = tokenA == token0 ? (reserve0, reserve1) : (reserve1, reserve0);
     }
 }

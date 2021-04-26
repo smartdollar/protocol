@@ -31,14 +31,14 @@ contract PoolGetters is PoolState {
      */
 
     function usdc() public view returns (address) {
-        return Constants.getUsdcAddress();
+        return address(_state.provider.CURRENCY);
     }
 
     function dao() public view returns (IDAO) {
         return _state.provider.dao;
     }
 
-    function dollar() public view returns (IDollar) {
+    function dollar() public view returns (ISmarty) {
         return _state.provider.dollar;
     }
 
@@ -121,4 +121,10 @@ contract PoolGetters is PoolState {
     function epoch() internal view returns (uint256) {
         return dao().epoch();
     }
+
+    modifier onlyAdmin(){
+        require( _state.dev == msg.sender, "!onlyAdmin" );
+        _;
+    }
+
 }

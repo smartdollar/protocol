@@ -123,7 +123,7 @@ describe('Market', function () {
       await this.market.mintToE(this.market.address, 100000);
       await this.market.incrementTotalRedeemableE(100000);
     });
-
+/*
     describe('before redeemable', function () {
       describe('same epoch', function () {
         it('reverts', async function () {
@@ -138,7 +138,7 @@ describe('Market', function () {
         });
       });
     });
-
+*/
     describe('after redeemable', function () {
       beforeEach(async function () {
         await this.market.incrementEpochE();

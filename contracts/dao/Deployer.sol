@@ -20,65 +20,29 @@ pragma solidity ^0.5.17;
 pragma experimental ABIEncoderV2;
 
 import "../external/Decimal.sol";
-import "../token/Dollar.sol";
+import "../token/Smarty.sol";
 import "../oracle/Oracle.sol";
 import "../oracle/Pool.sol";
 import "./Upgradeable.sol";
 import "./Permission.sol";
 
 
-contract Deployer1 is State, Permission, Upgradeable {
+contract Deployer is State, Permission, Upgradeable {
     function initialize() initializer public {
-        _state.provider.dollar = new Dollar();
-    }
 
+    }
     function implement(address implementation) external {
         upgradeTo(implementation);
     }
-    function dollar() public view returns (IDollar) {
-        return _state.provider.dollar;
-    }
-}
-
-contract Deployer2 is State, Permission, Upgradeable {
-    function initialize() initializer public {
-        //_state.provider.oracle = new Oracle(address(dollar()));
-        //oracle().setup();
-    }
-
-    function implement(address implementation) external {
-        upgradeTo(implementation);
-    }
-    function oracle() public view returns (IOracle) {
-        return _state.provider.oracle;
-    }
-}
-
-contract Deployer3 is State, Permission, Upgradeable {
-    function initialize() initializer public {
-        _state.provider.pool = address(new Pool(address(dollar()), address(oracle().pair())));
-    }
-
-    function implement(address implementation) external {
-        upgradeTo(implementation);
-    }
-    function pool() public view returns (address) {
-        return _state.provider.pool;
-    }
-    function pair() public view returns (address) {
-        return oracle().pair();
-    }
-}
-
-contract Deployer4 is State, Permission, Upgradeable {
-    function initialize() initializer public {
-        _state.provider.oracle = new Oracle();
-    }
-
-    function implement(address implementation) external {
-        upgradeTo(implementation);
-    }
-    function oracle() public view returns (IOracle) {
-        return _state.provider.oracle;
+    function setup( address _SMARTY,
+                    address _ORACLE,
+                    address _CURRENCY,
+                    address _FACTORY,
+                    address _POOL ) public {
+        _state.provider.dollar = Smarty(_SMARTY);
+        _state.provider.CURRENCY = _CURRENCY;
+        _state.provider.FACTORY = _FACTORY;
+        _state.provider.oracle = Oracle(_ORACLE);
+        _state.provider.pool = _POOL;
     }
 }

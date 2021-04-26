@@ -23,13 +23,13 @@ import "@openzeppelin/contracts/token/ERC20/ERC20Burnable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20Detailed.sol";
 import "@openzeppelin/contracts/access/roles/MinterRole.sol";
 import "./Permittable.sol";
-import "./IDollar.sol";
+import "./ISmarty.sol";
 
 
-contract Dollar is IDollar, MinterRole, ERC20Detailed, Permittable, ERC20Burnable  {
+contract Smarty is ISmarty, MinterRole, ERC20Detailed, Permittable, ERC20Burnable  {
 
     constructor()
-    ERC20Detailed("Smart Dollar", "SD", 18)
+    ERC20Detailed("Smarty", "SMT", 18)
     Permittable()
     public
     { }
@@ -45,7 +45,7 @@ contract Dollar is IDollar, MinterRole, ERC20Detailed, Permittable, ERC20Burnabl
             _approve(
                 sender,
                 _msgSender(),
-                allowance(sender, _msgSender()).sub(amount, "Dollar: transfer amount exceeds allowance"));
+                allowance(sender, _msgSender()).sub(amount, "Smarty: transfer amount exceeds allowance"));
         }
         return true;
     }
